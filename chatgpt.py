@@ -19,7 +19,7 @@ def chat_with_gpt(message):
 
     # Call the OpenAI API to get a response from ChatGPT
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Use the appropriate model name
+        model="gpt-4o",  # Use the appropriate model name
         messages=conversation_history,
     )
 
