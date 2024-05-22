@@ -7,7 +7,7 @@ from pygments.formatters import TerminalFormatter
 import re
 
 # Set your OpenAI API key here
-api_key = 'xxx'
+api_key = ''
 
 # Initialize the OpenAI API client
 openai.api_key = api_key
