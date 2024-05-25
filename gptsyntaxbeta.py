@@ -81,12 +81,15 @@ def main():
         print()  # Move to the next line after printing the response
     else:
         # Interactive mode if no message or file is provided
+        print()
         print("ChatGPT CLI App")
         print("Type 'file: /path/to/file' to add a file to the chat.")
         print("Type 'exit' to end the chat.")
+        print()
         while True:
             # Read user input
             user_input = input("You: ")
+            print()
             if user_input.lower() == 'exit':
                 print("Exiting the chat. Goodbye!")
                 break
@@ -113,6 +116,7 @@ def main():
             sys.stdout.write("ChatGPT: ")
             sys.stdout.flush()
             print_with_highlighting(response)
+            print()
             print()  # Move to the next line after printing the response
 
 if __name__ == "__main__":
