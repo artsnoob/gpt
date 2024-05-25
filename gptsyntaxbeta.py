@@ -2,6 +2,7 @@ import openai
 import sys
 import re
 import argparse
+import os
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import TerminalFormatter
@@ -58,8 +59,9 @@ def main():
 
     file_content = ""
     if args.file:
+        file_path = os.path.expanduser(args.file)  # Expand ~ to the full home directory path
         try:
-            with open(args.file, 'r') as file:
+            with open(file_path, 'r') as file:
                 file_content = file.read()
         except Exception as e:
             print(f"Error reading file: {e}")
@@ -80,6 +82,7 @@ def main():
     else:
         # Interactive mode if no message or file is provided
         print("ChatGPT CLI App")
+        print("Type 'file: /path/to/file' to add a file to the chat.")
         print("Type 'exit' to end the chat.")
         while True:
             # Read user input
@@ -87,8 +90,24 @@ def main():
             if user_input.lower() == 'exit':
                 print("Exiting the chat. Goodbye!")
                 break
+
+            # Check if the user wants to include a file
+            if user_input.lower().startswith('file:'):
+                file_path = user_input[5:].strip()
+                file_path = os.path.expanduser(file_path)  # Expand ~ to the full home directory path
+                try:
+                    with open(file_path, 'r') as file:
+                        file_content = file.read()
+                        print(f"File content from {file_path} included in the conversation.")
+                except Exception as e:
+                    print(f"Error reading file: {e}")
+                    continue
+                # Read the next input as the actual message
+                user_input = input("You (your message): ")
+
             # Get the response from ChatGPT
-            response = chat_with_gpt(user_input)
+            combined_input = f"{file_content}\n\n{user_input}" if file_content else user_input
+            response = chat_with_gpt(combined_input)
             
             # Print ChatGPT's response with selective syntax highlighting
             sys.stdout.write("ChatGPT: ")
