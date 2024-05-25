@@ -11,6 +11,9 @@ Enter your own ChatGPT API key.
 Added the ability to send files to the API by adding a file switch:
 For example: "gpt -f /path/to/file what does this script do".
 
+Also added the ability to add a file to the chat in interactive mode.
+When in interactive mode type: "file: /path/to/file" to add a file to the chat.
+
 25/05/2024: 
 
 Added the ability to add arguments in the CLI to gptsyntaxbeta.py.
