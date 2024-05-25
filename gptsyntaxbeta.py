@@ -82,7 +82,7 @@ def main():
     else:
         # Interactive mode if no message or file is provided
         print()
-        print("ChatGPT CLI App")
+        print("Welcome to the GPT-4o API.")
         print("Type 'file: /path/to/file' to add a file to the chat.")
         print("Type 'exit' to end the chat.")
         print()
