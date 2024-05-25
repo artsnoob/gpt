@@ -8,6 +8,11 @@ Enter your own ChatGPT API key.
 
 25/05/2024: 
 
+Added the ability to send files to the API by adding a file switch:
+For example: "gpt -f /path/to/file what does this script do".
+
+25/05/2024: 
+
 Added the ability to add arguments in the CLI to gptsyntaxbeta.py.
 For example, when gpt is set as an alias in ~./zshrc to run "python3 ~/gpt.py", you can just type: "gpt how are you today".
 
