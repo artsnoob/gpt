@@ -10,6 +10,9 @@ Enter your own ChatGPT API key.
 
 Added a welcome ASCII design to gptwelcome.py
 
+Added the ability to save the previous response:
+Type 'save: /path/to/file' to save the last response to a file.
+
 25/05/2024: 
 
 - Added the ability to add arguments in the CLI to gptsyntaxbeta.py.
