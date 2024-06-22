@@ -6,6 +6,10 @@ Enter your own ChatGPT API key.
 
 **************************************************************************************************************
 
+22/06/2024:
+
+Added a welcome ASCII design to gptwelcome.py
+
 25/05/2024: 
 
 - Added the ability to add arguments in the CLI to gptsyntaxbeta.py.
