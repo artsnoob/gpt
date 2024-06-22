@@ -8,7 +8,7 @@ from pygments.lexers import PythonLexer
 from pygments.formatters import TerminalFormatter
 
 # Set your OpenAI API key here
-api_key = 'xxx'
+api_key = 'xx'
 
 # Initialize the OpenAI API client
 openai.api_key = api_key
@@ -94,8 +94,12 @@ def main():
         print("Welcome to the GPT-4o API.")
         print()
         print("Type 'file: /path/to/file' to add a file to the chat.")
+        print("Type 'save: /path/to/file' to save the last response to a file.")
+        print()
         print("Type 'exit' to end the chat.")
         print()
+        
+        last_response = ""
         while True:
             # Read user input
             user_input = input("You: ")
@@ -103,6 +107,18 @@ def main():
             if user_input.lower() == 'exit':
                 print("Exiting the chat. Goodbye!")
                 break
+
+            # Check if the user wants to save the last response to a file
+            if user_input.lower().startswith('save:'):
+                save_path = user_input[5:].strip()
+                save_path = os.path.expanduser(save_path)  # Expand ~ to the full home directory path
+                try:
+                    with open(save_path, 'w') as file:
+                        file.write(last_response)
+                    print(f"Response saved to {save_path}")
+                except Exception as e:
+                    print(f"Error writing to file: {e}")
+                continue
 
             # Check if the user wants to include a file
             if user_input.lower().startswith('file:'):
@@ -120,12 +136,12 @@ def main():
 
             # Get the response from ChatGPT
             combined_input = f"{file_content}\n\n{user_input}" if file_content else user_input
-            response = chat_with_gpt(combined_input)
+            last_response = chat_with_gpt(combined_input)
             
             # Print ChatGPT's response with selective syntax highlighting
             sys.stdout.write("ChatGPT: ")
             sys.stdout.flush()
-            print_with_highlighting(response)
+            print_with_highlighting(last_response)
             print()
             print()  # Move to the next line after printing the response
 
