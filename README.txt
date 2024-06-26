@@ -5,6 +5,11 @@ Simple ChatGPT CLI script for back and forth communication with the GPT API.
 Enter your own ChatGPT API key.
 
 **************************************************************************************************************
+26/06/2024:
+
+Added vision capabilities to the gtpwelcome script with GPT-4o.
+
+Type 'image: /path/to/image' to analyze an image.
 
 22/06/2024:
 
