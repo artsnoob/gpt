@@ -77,7 +77,3 @@ The script automatically saves conversation history to `~/.gptcli_history.json`.
 ## Note
 
 This tool uses the GPT-4 model with vision capabilities. Ensure your OpenAI account has access to GPT-4 and the necessary credits for API usage.
-
-## License
-
-[MIT License](https://opensource.org/licenses/MIT)
