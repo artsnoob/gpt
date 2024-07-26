@@ -71,7 +71,7 @@ def chat_with_gpt(message, image_path=None):
 
     # Call the OpenAI API to get a response from ChatGPT
     response = openai.ChatCompletion.create(
-        model="gpt-4o",  # Use the vision-capable model
+        model="gpt-4o-mini",  # Use the vision-capable model
         messages=messages,
         max_tokens=300,
     )
