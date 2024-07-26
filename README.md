@@ -1,11 +1,11 @@
 # GPT CLI
 
-GPT CLI is a command-line interface tool that allows you to interact with OpenAI's GPT-4 model, including its vision capabilities, directly from your terminal. It supports chat-based interactions, file input, image analysis, and conversation history management.
+GPT CLI is a command-line interface tool that allows you to interact with OpenAI's GPT-4o-mini model, including its vision capabilities, directly from your terminal. It supports chat-based interactions, file input, image analysis, and conversation history management.
 
 ## Features
 
-- Interactive chat with GPT-4
-- Support for analyzing images using GPT-4 Vision
+- Interactive chat with GPT-4o-mini
+- Support for analyzing images using GPT Vision
 - File input for including text content in conversations
 - Conversation history management with the ability to reuse previous questions
 - Syntax highlighting for code snippets in responses
