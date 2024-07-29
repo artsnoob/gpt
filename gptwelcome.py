@@ -8,9 +8,14 @@ import json
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import TerminalFormatter
+from colorama import init, Fore, Back, Style
+import shutil
+
+# Initialize colorama
+init(autoreset=True)
 
 # Set your OpenAI API key here
-api_key = 'xx'
+api_key = 'xxx'
 
 # Initialize the OpenAI API client
 openai.api_key = api_key
@@ -31,7 +36,7 @@ def load_history():
                 conversation_history = data.get('conversation_history', [])
                 user_questions = data.get('user_questions', [])
         except json.JSONDecodeError:
-            print("Error loading history file. Starting with empty history.")
+            print(f"{Fore.RED}Error loading history file. Starting with empty history.{Style.RESET_ALL}")
 
 def save_history():
     try:
@@ -41,7 +46,7 @@ def save_history():
                 'user_questions': user_questions
             }, f)
     except Exception as e:
-        print(f"Error saving history: {e}")
+        print(f"{Fore.RED}Error saving history: {e}{Style.RESET_ALL}")
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
@@ -73,7 +78,7 @@ def chat_with_gpt(message, image_path=None):
     response = openai.ChatCompletion.create(
         model="gpt-4o-mini",  # Use the vision-capable model
         messages=messages,
-        max_tokens=300,
+        max_tokens=1000,
     )
 
     # Extract the response content
@@ -93,26 +98,26 @@ def print_with_highlighting(text):
     
     for i, part in enumerate(matches):
         if i % 2 == 0:
-            # This is normal text
-            sys.stdout.write(part)
-            sys.stdout.flush()
+            # Normal text
+            print(f"{Fore.WHITE}{part}", end='')
         else:
-            # This is code, apply syntax highlighting
-            highlighted_code = highlight(part, PythonLexer(), TerminalFormatter())
-            sys.stdout.write(highlighted_code)
-            sys.stdout.flush()
+            # Code block
+            print(f"{Fore.BLACK}{Back.WHITE}")
+            for line in part.split('\n'):
+                print(f"{Fore.BLACK}{Back.WHITE}{line.ljust(shutil.get_terminal_size().columns)}")
+            print(Style.RESET_ALL, end='')
 
 def show_history():
     if not user_questions:
-        print("No history available.")
+        print(f"{Fore.YELLOW}No history available.{Style.RESET_ALL}")
         return None
 
-    print("Recent questions:")
+    print(f"{Fore.CYAN}Recent questions:{Style.RESET_ALL}")
     for i, question in enumerate(user_questions[-10:], 1):
-        print(f"{i}. {question}")
+        print(f"{Fore.WHITE}{i}. {question}{Style.RESET_ALL}")
     
     while True:
-        choice = input("Enter the number of the question to reuse (or 'c' to cancel): ")
+        choice = input(f"{Fore.YELLOW}Enter the number of the question to reuse (or 'c' to cancel): {Fore.RESET}")
         if choice.lower() == 'c':
             return None
         try:
@@ -120,9 +125,54 @@ def show_history():
             if 0 <= index < len(user_questions[-10:]):
                 return user_questions[-10:][index]
             else:
-                print("Invalid number. Please try again.")
+                print(f"{Fore.RED}Invalid number. Please try again.{Style.RESET_ALL}")
         except ValueError:
-            print("Invalid input. Please enter a number or 'c' to cancel.")
+            print(f"{Fore.RED}Invalid input. Please enter a number or 'c' to cancel.{Style.RESET_ALL}")
+
+def print_startup_screen():
+    # Set background color
+    print(Back.BLACK + Fore.RESET + Style.BRIGHT, end="")
+    
+    # Print decorative border
+    border = "╔" + "═" * (shutil.get_terminal_size().columns - 2) + "╗"
+    print(Fore.BLUE + border)
+
+    # ASCII art with gradient
+    ascii_art = r'''
+   /$$$$$$  /$$       /$$$$$$                      /$$$$$$  /$$$$$$$  /$$$$$$$$
+  /$$__  $$| $$      |_  $$_/                     /$$__  $$| $$__  $$|__  $$__/
+ | $$  \__/| $$        | $$                      | $$  \__/| $$  \ $$   | $$   
+ | $$ /$$$$| $$        | $$         /$$$$$$      | $$ /$$$$| $$$$$$$/   | $$   
+ | $$|_  $$| $$        | $$        |______/      | $$|_  $$| $$____/    | $$   
+ | $$  \ $$| $$        | $$                      | $$  \ $$| $$         | $$   
+ |  $$$$$$/| $$$$$$$$ /$$$$$$                    |  $$$$$$/| $$         | $$   
+  \______/ |________/|______/                     \______/ |__/         |__/   
+    '''
+    
+    lines = ascii_art.split('\n')
+    for i, line in enumerate(lines):
+        color = int(255 - (i / len(lines)) * 155)
+        print(f"\033[38;2;0;{color};255m{line}")
+
+    # Welcome message
+    print(Fore.LIGHTCYAN_EX + "\nWelcome to the GPT-4 Vision API.")
+    print()
+
+    # Instructions
+    instructions = [
+        "Type 'file: /path/to/file' to add a file to the chat.",
+        "Type 'save: /path/to/file' to save the last response to a file.",
+        "Type 'image: /path/to/image' to analyze an image.",
+        "Type 'history' to view and reuse previous questions.",
+        "Type 'exit' to end the chat."
+    ]
+
+    for instruction in instructions:
+        print(Fore.LIGHTYELLOW_EX + instruction)
+
+    # Print bottom border
+    print(Fore.BLUE + "╚" + "═" * (shutil.get_terminal_size().columns - 2) + "╝")
+    print(Style.RESET_ALL)
 
 def main():
     # Load history at the start of the program
@@ -141,7 +191,7 @@ def main():
             with open(file_path, 'r') as file:
                 file_content = file.read()
         except Exception as e:
-            print(f"Error reading file: {e}")
+            print(f"{Fore.RED}Error reading file: {e}{Style.RESET_ALL}")
             return
 
     if args.message or file_content or args.image:
@@ -152,45 +202,27 @@ def main():
         if args.image:
             image_path = os.path.expanduser(args.image)
             if not os.path.exists(image_path):
-                print(f"Error: Image file not found at {image_path}")
+                print(f"{Fore.RED}Error: Image file not found at {image_path}{Style.RESET_ALL}")
                 return
             user_input = f"Analyze this image: {user_input}"
             response = chat_with_gpt(user_input, image_path)
         else:
             response = chat_with_gpt(user_input)
         
-        sys.stdout.write("ChatGPT: ")
+        sys.stdout.write(f"{Fore.GREEN}ChatGPT: {Fore.RESET}")
         sys.stdout.flush()
         print_with_highlighting(response)
         print()
     else:
         # Interactive mode
-        print(r''' 
-  /$$$$$$  /$$       /$$$$$$                      /$$$$$$  /$$$$$$$  /$$$$$$$$
- /$$__  $$| $$      |_  $$_/                     /$$__  $$| $$__  $$|__  $$__/
-| $$  \__/| $$        | $$                      | $$  \__/| $$  \ $$   | $$   
-| $$      | $$        | $$         /$$$$$$      | $$ /$$$$| $$$$$$$/   | $$   
-| $$      | $$        | $$        |______/      | $$|_  $$| $$____/    | $$   
-| $$    $$| $$        | $$                      | $$  \ $$| $$         | $$   
-|  $$$$$$/| $$$$$$$$ /$$$$$$                    |  $$$$$$/| $$         | $$   
-\______/ |________/|______/                     \______/ |__/         |__/   
-''')
-        print("Welcome to the GPT-4 Vision API.")
-        print()
-        print("Type 'file: /path/to/file' to add a file to the chat.")
-        print("Type 'save: /path/to/file' to save the last response to a file.")
-        print("Type 'image: /path/to/image' to analyze an image.")
-        print("Type 'history' to view and reuse previous questions.")
-        print()
-        print("Type 'exit' to end the chat.")
-        print()
+        print_startup_screen()
         
         last_response = ""
         while True:
-            user_input = input("You: ")
+            user_input = input(f"{Fore.YELLOW}You: {Fore.RESET}")
             print()
             if user_input.lower() == 'exit':
-                print("Exiting the chat. Goodbye!")
+                print(f"{Fore.YELLOW}Exiting the chat. Goodbye!{Style.RESET_ALL}")
                 save_history()  # Save history before exiting
                 break
 
@@ -207,9 +239,9 @@ def main():
                 try:
                     with open(save_path, 'w') as file:
                         file.write(last_response)
-                    print(f"Response saved to {save_path}")
+                    print(f"{Fore.GREEN}Response saved to {save_path}{Style.RESET_ALL}")
                 except Exception as e:
-                    print(f"Error writing to file: {e}")
+                    print(f"{Fore.RED}Error writing to file: {e}{Style.RESET_ALL}")
                 continue
 
             file_content = ""
@@ -221,25 +253,25 @@ def main():
                 try:
                     with open(file_path, 'r') as file:
                         file_content = file.read()
-                    print(f"File content from {file_path} included in the conversation.")
+                    print(f"{Fore.GREEN}File content from {file_path} included in the conversation.{Style.RESET_ALL}")
                 except Exception as e:
-                    print(f"Error reading file: {e}")
+                    print(f"{Fore.RED}Error reading file: {e}{Style.RESET_ALL}")
                     continue
-                user_input = input("You (your message): ")
+                user_input = input(f"{Fore.YELLOW}You (your message): {Fore.RESET}")
             elif user_input.lower().startswith('image:'):
                 image_path = user_input[6:].strip()
                 image_path = os.path.expanduser(image_path)
                 if not os.path.exists(image_path):
-                    print(f"Error: Image file not found at {image_path}")
+                    print(f"{Fore.RED}Error: Image file not found at {image_path}{Style.RESET_ALL}")
                     continue
-                print(f"Image from {image_path} will be analyzed.")
-                user_input = input("You (describe what to analyze in the image): ")
+                print(f"{Fore.GREEN}Image from {image_path} will be analyzed.{Style.RESET_ALL}")
+                user_input = input(f"{Fore.YELLOW}You (describe what to analyze in the image): {Fore.RESET}")
 
             combined_input = f"{file_content}\n\n{user_input}" if file_content else user_input
             user_questions.append(combined_input)
             last_response = chat_with_gpt(combined_input, image_path)
             
-            sys.stdout.write("ChatGPT: ")
+            sys.stdout.write(f"{Fore.GREEN}ChatGPT: {Fore.RESET}")
             sys.stdout.flush()
             print_with_highlighting(last_response)
             print()
